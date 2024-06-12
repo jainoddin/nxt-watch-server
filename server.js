@@ -28,7 +28,10 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 mongoose
   .connect(
     `mongodb+srv://skjainoddin39854:hngmFxWB8ZLTHpwW@cluster0.lbfgvl4.mongodb.net/synergy-task-nxtwatch?retryWrites=true&w=majority
- JWT_SECRET=tUao3/fmx20gO0uLwpnlJ6t2qzMeOEWAxsIz/OG+3y4=`
+ JWT_SECRET=tUao3/fmx20gO0uLwpnlJ6t2qzMeOEWAxsIz/OG+3y4=`, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000}
   )
   .then(() => {
     console.log("Connected to MongoDB successfully!");
@@ -418,6 +421,55 @@ app.get("/get-video-savedetaill", async (req, res) => {
     res.json(videos);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+
+app.get("/get-likegamingvideo-by-queryy", async (req, res) => {
+  const liked = req.query.liked;
+  console.log(`liked: ${liked}`);
+
+  if (!liked) {
+    return res.status(400).json({ message: "liked is required" });
+  }
+
+  try {
+    const videos = await gamingDetails.find({ liked: liked });
+
+    if (!videos || videos.length === 0) {
+      console.log(`No videos found for category: ${liked}`);
+      return res.status(404).json({ message: "No videos found" });
+    }
+
+    res.json(videos);
+  } catch (error) {
+    console.error(`Error retrieving videos: ${error.message}`);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.get("/get-likevideo-by-queryy", async (req, res) => {
+  const liked = req.query.liked;
+  console.log(`liked: ${liked}`);
+
+  if (!liked) {
+    return res.status(400).json({ message: "liked is required" });
+  }
+
+  try {
+    const videos = await videoDetails.find({ liked: liked });
+
+    if (!videos || videos.length === 0) {
+      console.log(`No videos found for category: ${liked}`);
+      return res.status(404).json({ message: "No videos found" });
+    }
+
+    res.json(videos);
+  } catch (error) {
+    console.error(`Error retrieving videos: ${error.message}`);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
